@@ -1,168 +1,168 @@
-# How to work with large language models
+# 如何使用大型语言模型
 
-## How large language models work
+## 大型语言模型的工作原理
 
-[Large language models][Large language models Blog Post] are functions that map text to text. Given an input string of text, a large language model predicts the text that should come next.
+[大型语言模型][大型语言模型博客文章] 是将文本映射到文本的函数。给定一个输入文本字符串，大型语言模型会预测接下来应该出现的文本。
 
-The magic of large language models is that by being trained to minimize this prediction error over vast quantities of text, the models end up learning concepts useful for these predictions. For example, they learn:
+大型语言模型的魔力在于，通过训练以最小化对大量文本的预测错误，这些模型最终学会了对这些预测有用的概念。例如，它们学会了：
 
-- how to spell
-- how grammar works
-- how to paraphrase
-- how to answer questions
-- how to hold a conversation
-- how to write in many languages
-- how to code
-- etc.
+- 如何拼写
+- 语法如何工作
+- 如何改写
+- 如何回答问题
+- 如何进行对话
+- 如何用多种语言写作
+- 如何编程
+- 等等。
 
-They do this by “reading” a large amount of existing text and learning how words tend to appear in context with other words, and uses what it has learned to predict the next most likely word that might appear in response to a user request, and each subsequent word after that.
+它们通过“阅读”大量现有文本来实现这一点，并学习词语在其他词语的上下文中出现的趋势，并使用这些学习到的知识来预测用户请求时可能出现的下一个最可能的词，以及之后的每个词。
 
-GPT-3 and GPT-4 power [many software products][OpenAI Customer Stories], including productivity apps, education apps, games, and more.
+GPT-3 和 GPT-4 支持[许多软件产品][OpenAI 客户案例]，包括生产力应用程序、教育应用程序、游戏等。
 
-## How to control a large language model
+## 如何控制大型语言模型
 
-Of all the inputs to a large language model, by far the most influential is the text prompt.
+在所有输入到大型语言模型的因素中，最具影响力的无疑是文本提示。
 
-Large language models can be prompted to produce output in a few ways:
+大型语言模型可以通过几种方式进行提示以产生输出：
 
-- **Instruction**: Tell the model what you want
-- **Completion**: Induce the model to complete the beginning of what you want
-- **Scenario**: Give the model a situation to play out
-- **Demonstration**: Show the model what you want, with either:
-  - A few examples in the prompt
-  - Many hundreds or thousands of examples in a fine-tuning training dataset
+- **指令**：告诉模型你想要什么
+- **完成**：诱导模型完成你想要的开始部分
+- **场景**：给模型一个情景让其扮演
+- **示范**：向模型展示你想要的效果，通过：
+  - 在提示中提供几个例子
+  - 在微调训练数据集中提供许多数百或数千个例子
 
-An example of each is shown below.
+以下展示了每种方法的例子。
 
-### Instruction prompts
+### 指令提示
 
-Write your instruction at the top of the prompt (or at the bottom, or both), and the model will do its best to follow the instruction and then stop. Instructions can be detailed, so don't be afraid to write a paragraph explicitly detailing the output you want, just stay aware of how many [tokens](https://help.openai.com/en/articles/4936856-what-are-tokens-and-how-to-count-them) the model can process.
+在提示的顶部（或底部，或两者）写下你的指令，模型会尽力遵循指令并停止。指令可以很详细，所以不要害怕写一段明确描述你想要的输出的文字，但要注意模型可以处理的[token](https://help.openai.com/en/articles/4936856-what-are-tokens-and-how-to-count-them)数量。
 
-Example instruction prompt:
+示例指令提示：
 
 ```text
-Extract the name of the author from the quotation below.
+从下面的引用中提取作者的名字。
 
-“Some humans theorize that intelligent species go extinct before they can expand into outer space. If they're correct, then the hush of the night sky is the silence of the graveyard.”
-― Ted Chiang, Exhalation
+“有些人类理论认为，智能物种在能够扩展到外太空之前就会灭绝。如果他们是正确的，那么夜空的寂静就是墓地的沉默。”
+― 特德·姜，《呼气》
 ```
 
-Output:
+输出：
 
 ```text
-Ted Chiang
+特德·姜
 ```
 
-### Completion prompt example
+### 完成提示示例
 
-Completion-style prompts take advantage of how large language models try to write text they think is most likely to come next. To steer the model, try beginning a pattern or sentence that will be completed by the output you want to see. Relative to direct instructions, this mode of steering large language models can take more care and experimentation. In addition, the models won't necessarily know where to stop, so you will often need stop sequences or post-processing to cut off text generated beyond the desired output.
+完成风格的提示利用了大型语言模型尝试写出最可能接下来出现的文本的特性。要引导模型，尝试开始一个模式或句子，以便模型完成你想要的输出。与直接指令相比，这种引导大型语言模型的方式可能需要更多的关注和试验。此外，模型不一定知道在哪里停止，所以你通常需要停止序列或后处理来切断超出所需输出的文本。
 
-Example completion prompt:
+示例完成提示：
 
 ```text
-“Some humans theorize that intelligent species go extinct before they can expand into outer space. If they're correct, then the hush of the night sky is the silence of the graveyard.”
-― Ted Chiang, Exhalation
+“有些人类理论认为，智能物种在能够扩展到外太空之前就会灭绝。如果他们是正确的，那么夜空的寂静就是墓地的沉默。”
+― 特德·姜，《呼气》
 
-The author of this quote is
+这个引用的作者是
 ```
 
-Output:
+输出：
 
 ```text
- Ted Chiang
+ 特德·姜
 ```
 
-### Scenario prompt example
+### 场景提示示例
 
-Giving the model a scenario to follow or role to play out can be helpful for complex queries or when seeking imaginative responses. When using a hypothetical prompt, you set up a situation, problem, or story, and then ask the model to respond as if it were a character in that scenario or an expert on the topic.
+为模型提供一个情景来遵循或扮演的角色，对于复杂的查询或寻求富有想象力的回答时非常有用。使用假设提示时，你设置一个情景、问题或故事，然后要求模型像在那个情景中的人物或相关领域的专家那样回应。
 
-Example scenario prompt:
+示例场景提示：
 
 ```text
-Your role is to extract the name of the author from any given text
+你的角色是从任何给定文本中提取作者的名字
 
-“Some humans theorize that intelligent species go extinct before they can expand into outer space. If they're correct, then the hush of the night sky is the silence of the graveyard.”
-― Ted Chiang, Exhalation
+“有些人类理论认为，智能物种在能够扩展到外太空之前就会灭绝。如果他们是正确的，那么夜空的寂静就是墓地的沉默。”
+― 特德·姜，《呼气》
 ```
 
-Output:
+输出：
 
 ```text
- Ted Chiang
+ 特德·姜
 ```
 
-### Demonstration prompt example (few-shot learning)
+### 示范提示示例（少量学习）
 
-Similar to completion-style prompts, demonstrations can show the model what you want it to do. This approach is sometimes called few-shot learning, as the model learns from a few examples provided in the prompt.
+类似于完成风格的提示，示范可以向模型展示你想要它做什么。这种方法有时被称为少量学习，因为模型从提示中提供的几个例子中学习。
 
-Example demonstration prompt:
+示例示范提示：
 
 ```text
-Quote:
-“When the reasoning mind is forced to confront the impossible again and again, it has no choice but to adapt.”
-― N.K. Jemisin, The Fifth Season
-Author: N.K. Jemisin
+引用：
+“当推理的心智一次又一次被迫面对不可能时，它别无选择，只能适应。”
+― N.K.杰米森，《第五季》
+作者：N.K.杰米森
 
-Quote:
-“Some humans theorize that intelligent species go extinct before they can expand into outer space. If they're correct, then the hush of the night sky is the silence of the graveyard.”
-― Ted Chiang, Exhalation
-Author:
+引用：
+“有些人类理论认为，智能物种在能够扩展到外太空之前就会灭绝。如果他们是正确的，那么夜空的寂静就是墓地的沉默。”
+― 特德·姜，《呼气》
+作者：
 ```
 
-Output:
+输出：
 
 ```text
- Ted Chiang
+ 特德·姜
 ```
 
-### Fine-tuned prompt example
+### 微调提示示例
 
-With enough training examples, you can [fine-tune][Fine Tuning Docs] a custom model. In this case, instructions become unnecessary, as the model can learn the task from the training data provided. However, it can be helpful to include separator sequences (e.g., `->` or `###` or any string that doesn't commonly appear in your inputs) to tell the model when the prompt has ended and the output should begin. Without separator sequences, there is a risk that the model continues elaborating on the input text rather than starting on the answer you want to see.
+有了足够的训练示例，你可以[微调][微调文档]一个自定义模型。在这种情况下，指令变得不必要，因为模型可以从提供的训练数据中学习任务。然而，包含分隔符序列（例如，`->`或`###`或任何在你的输入中不常见的字符串）可能会有帮助，以告知模型提示何时结束，输出应从何处开始。如果没有分隔符序列，存在模型继续扩展输入文本而不是开始你想要的答案的风险。
 
-Example fine-tuned prompt (for a model that has been custom trained on similar prompt-completion pairs):
+示例微调提示（对于一个已经在类似提示-完成对上进行了自定义训练的模型）：
 
 ```text
-“Some humans theorize that intelligent species go extinct before they can expand into outer space. If they're correct, then the hush of the night sky is the silence of the graveyard.”
-― Ted Chiang, Exhalation
+“有些人类理论认为，智能物种在能够扩展到外太空之前就会灭绝。如果他们是正确的，那么夜空的寂静就是墓地的沉默。”
+― 特德·姜，《呼气》
 
 ###
 
 
 ```
 
-Output:
+输出：
 
 ```text
- Ted Chiang
+ 特德·姜
 ```
 
-## Code Capabilities
+## 代码能力
 
-Large language models aren't only great at text - they can be great at code too. OpenAI's [GPT-4][GPT-4 and GPT-4 Turbo] model is a prime example.
+大型语言模型不仅擅长文本处理，它们在代码方面也很出色。OpenAI的[GPT-4][GPT-4 和 GPT-4 Turbo]模型就是一个主要例子。
 
-GPT-4 powers [numerous innovative products][OpenAI Customer Stories], including:
+GPT-4 支持[众多创新产品][OpenAI 客户案例]，包括：
 
-- [GitHub Copilot] (autocompletes code in Visual Studio and other IDEs)
-- [Replit](https://replit.com/) (can complete, explain, edit and generate code)
-- [Cursor](https://cursor.sh/) (build software faster in an editor designed for pair-programming with AI)
+- [GitHub Copilot]（在 Visual Studio 和其他IDE中自动完成代码）
+- [Replit](https://replit.com/)（可以完成、解释、编辑和生成代码）
+- [Cursor](https://cursor.sh/)（在专为与AI配对编程设计的编辑器中更快地构建软件）
 
-GPT-4 is more advanced than previous models like `gpt-3.5-turbo-instruct`. But, to get the best out of GPT-4 for coding tasks, it's still important to give clear and specific instructions. As a result, designing good prompts can take more care.
+GPT-4 比之前的模型如 `gpt-3.5-turbo-instruct` 更加先进。但为了在编码任务中发挥GPT-4的最大效用，仍然重要的是给出清晰且具体的指令。因此，设计好的提示需要更多的关注。
 
-### More prompt advice
+### 更多提示建议
 
-For more prompt examples, visit [OpenAI Examples][OpenAI Examples].
+要获取更多提示示例，请访问 [OpenAI 示例][OpenAI 示例]。
 
-In general, the input prompt is the best lever for improving model outputs. You can try tricks like:
+一般来说，输入提示是改善模型输出的最佳None杠杆。你可以尝试以下技巧：
 
-- **Be more specific** E.g., if you want the output to be a comma separated list, ask it to return a comma separated list. If you want it to say "I don't know" when it doesn't know the answer, tell it 'Say "I don't know" if you do not know the answer.' The more specific your instructions, the better the model can respond.
-- **Provide Context**: Help the model understand the bigger picture of your request. This could be background information, examples/demonstrations of what you want or explaining the purpose of your task.
-- **Ask the model to answer as if it was an expert.** Explicitly asking the model to produce high quality output or output as if it was written by an expert can induce the model to give higher quality answers that it thinks an expert would write. Phrases like "Explain in detail" or "Describe step-by-step" can be effective.
-- **Prompt the model to write down the series of steps explaining its reasoning.** If understanding the 'why' behind an answer is important, prompt the model to include its reasoning. This can be done by simply adding a line like "[Let's think step by step](https://arxiv.org/abs/2205.11916)" before each answer.
+- **更具体** 例如，如果你希望输出是None逗号分隔的列表，就要求它返回一个None逗号分隔的列表。如果你希望它在不知道答案时说“我不知道”，就告诉它 '如果不知道答案，请说“我不知道”。' 你的指令越具体，模型的响应就越好。
+- **提供背景**：帮助模型理解你请求的更大背景。这可能是背景信息、你想要的示例/示范或解释任务的目的。
+- **要求模型以专家的身份回答。** 明确要求模型产生高质量的输出或以专家身份撰写的输出可以诱导模型给出它认为专家会写的高质量答案。像“详细解释”或“逐步描述”这样的短语可能很有效。
+- **提示模型写下解释其推理的步骤系列。** 如果理解答案背后的“为什么”很重要，提示模型包括其推理。这可以通过简单地在每个回答前添加一行如 “[让我们逐步思考](https://arxiv.org/abs/2205.11916)” 来实现。
 
-[Fine Tuning Docs]: https://platform.openai.com/docs/guides/fine-tuning
-[OpenAI Customer Stories]: https://openai.com/customer-stories
-[Large language models Blog Post]: https://openai.com/research/better-language-models
+[微调文档]: https://platform.openai.com/docs/guides/fine-tuning
+[OpenAI 客户案例]: https://openai.com/customer-stories
+[大型语言模型博客文章]: https://openai.com/research/better-language-models
 [GitHub Copilot]: https://github.com/features/copilot/
-[GPT-4 and GPT-4 Turbo]: https://platform.openai.com/docs/models/gpt-4-and-gpt-4-turbo
+[GPT-4 和 GPT-4 Turbo]: https://platform.openai.com/docs/models/gpt-4-and-gpt-4-turbo
 [GPT3 Apps Blog Post]: https://openai.com/blog/gpt-3-apps/
-[OpenAI Examples]: https://platform.openai.com/examples
+[OpenAI 示例]: https://platform.openai.com/examples

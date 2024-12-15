@@ -1,51 +1,51 @@
-# Text comparison examples
+# 文本比较示例
 
-The [OpenAI API embeddings endpoint](https://beta.openai.com/docs/guides/embeddings) can be used to measure relatedness or similarity between pieces of text.
+可以使用 [OpenAI API 的嵌入端点](https://beta.openai.com/docs/guides/embeddings) 来测量文本片段之间的相关性或相似性。
 
-By leveraging GPT-3's understanding of text, these embeddings [achieved state-of-the-art results](https://arxiv.org/abs/2201.10005) on benchmarks in unsupervised learning and transfer learning settings.
+通过利用 GPT-3 对文本的理解，这些嵌入在无监督学习和迁移学习环境下的基准测试中 [达到了最先进的结果](https://arxiv.org/abs/2201.10005)。
 
-Embeddings can be used for semantic search, recommendations, cluster analysis, near-duplicate detection, and more.
+嵌入可以用于语义搜索、推荐、聚类分析、近似重复检测等。
 
-For more information, read OpenAI's blog post announcements:
+有关更多信息，请阅读 OpenAI 的博客公告：
 
-- [Introducing Text and Code Embeddings (Jan 2022)](https://openai.com/blog/introducing-text-and-code-embeddings/)
-- [New and Improved Embedding Model (Dec 2022)](https://openai.com/blog/new-and-improved-embedding-model/)
+- [引入文本和代码嵌入（2022年1月）](https://openai.com/blog/introducing-text-and-code-embeddings/)
+- [新的和改进的嵌入模型（2022年12月）](https://openai.com/blog/new-and-improved-embedding-model/)
 
-For comparison with other embedding models, see [Massive Text Embedding Benchmark (MTEB) Leaderboard](https://huggingface.co/spaces/mteb/leaderboard)
+要与其他嵌入模型进行比较，请参见 [Massive Text Embedding Benchmark (MTEB) 排行榜](https://huggingface.co/spaces/mteb/leaderboard)
 
-## Semantic search
+## 语义搜索
 
-Embeddings can be used for search either by themselves or as a feature in a larger system.
+嵌入可以单独用于搜索，也可以作为更大系统中的一个特征。
 
-The simplest way to use embeddings for search is as follows:
+使用嵌入进行搜索的最简单方法如下：
 
-- Before the search (precompute):
-  - Split your text corpus into chunks smaller than the token limit (8,191 tokens for `text-embedding-3-small`)
-  - Embed each chunk of text
-  - Store those embeddings in your own database or in a vector search provider like [Pinecone](https://www.pinecone.io), [Weaviate](https://weaviate.io) or [Qdrant](https://qdrant.tech)
-- At the time of the search (live compute):
-  - Embed the search query
-  - Find the closest embeddings in your database
-  - Return the top results
+- 在搜索之前（预计算）：
+  - 将您的文本语料库分割成小于令牌限制的块（`text-embedding-3-small` 的令牌限制为 8,191）
+  - 嵌入每个文本块
+  - 将这些嵌入存储在您自己的数据库中，或者在向量搜索提供商如 [Pinecone](https://www.pinecone.io)、[Weaviate](https://weaviate.io) 或 [Qdrant](https://qdrant.tech) 中
+- 在搜索时（实时计算）：
+  - 嵌入搜索查询
+  - 在您的数据库中找到最接近的嵌入
+  - 返回顶部结果
 
-An example of how to use embeddings for search is shown in [Semantic_text_search_using_embeddings.ipynb](../examples/Semantic_text_search_using_embeddings.ipynb).
+关于如何使用嵌入进行搜索的示例，请参见 [Semantic_text_search_using_embeddings.ipynb](../examples/Semantic_text_search_using_embeddings.ipynb)。
 
-In more advanced search systems, the cosine similarity of embeddings can be used as one feature among many in ranking search results.
+在更高级的搜索系统中，嵌入的余弦相似度可以用作多个特征之一来排序搜索结果。
 
-## Question answering
+## 问答
 
-The best way to get reliably honest answers from GPT-3 is to give it source documents in which it can locate correct answers. Using the semantic search procedure above, you can cheaply search through a corpus of documents for relevant information and then give that information to GPT-3 via the prompt to answer a question. We demonstrate this in [Question_answering_using_embeddings.ipynb](../examples/Question_answering_using_embeddings.ipynb).
+从 GPT-3 获取可靠诚实答案的最佳方式是提供它能够定位正确答案的源文档。使用上面的语义搜索程序，您可以以低成本在文档语料库中搜索相关信息，然后通过提示将其提供给 GPT-3 来回答问题。我们在 [Question_answering_using_embeddings.ipynb](../examples/Question_answering_using_embeddings.ipynb) 中演示了这一点。
 
-## Recommendations
+## 推荐
 
-Recommendations are quite similar to search, except that instead of a free-form text query, the inputs are items in a set.
+推荐与搜索非常相似，只是输入不是自由形式的文本查询，而是集合中的项目。
 
-An example of how to use embeddings for recommendations is shown in [Recommendation_using_embeddings.ipynb](../examples/Recommendation_using_embeddings.ipynb).
+关于如何使用嵌入进行推荐的示例，请参见 [Recommendation_using_embeddings.ipynb](../examples/Recommendation_using_embeddings.ipynb)。
 
-Similar to search, these cosine similarity scores can either be used on their own to rank items or as features in larger ranking algorithms.
+类似于搜索，这些余弦相似度分数可以单独用来对项目进行排序，也可以作为更大排序算法中的特征。
 
-## Customizing Embeddings
+## 自定义嵌入
 
-Although OpenAI's embedding model weights cannot be fine-tuned, you can nevertheless use training data to customize embeddings to your application.
+虽然不能微调 OpenAI 的嵌入模型权重，但您仍然可以使用训练数据来定制嵌入以适应您的应用程序。
 
-In [Customizing_embeddings.ipynb](../examples/Customizing_embeddings.ipynb), we provide an example method for customizing your embeddings using training data. The idea of the method is to train a custom matrix to multiply embedding vectors by in order to get new customized embeddings. With good training data, this custom matrix will help emphasize the features relevant to your training labels. You can equivalently consider the matrix multiplication as (a) a modification of the embeddings or (b) a modification of the distance function used to measure the distances between embeddings.
+在 [Customizing_embeddings.ipynb](../examples/Customizing_embeddings.ipynb) 中，我们提供了一个使用训练数据定制嵌入的示例方法。该方法的思路是训练一个自定义矩阵来乘以嵌入向量，以获得新的定制嵌入。通过良好的训练数据，这个自定义矩阵将有助于强调与您的训练标签相关的特征。您可以等效地将矩阵乘法视为（a）嵌入的修改或（b）用于测量嵌入之间距离的距离函数的修改。
